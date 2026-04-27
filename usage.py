@@ -15,7 +15,7 @@ MODEL_DIR = "alta-model"
 
 # ── Tokenizer ─────────────────────────────────────────────────────────────────
 
-TOKEN_RE = re.compile(r'[A-Za-z_]\w*|\d+(?:\.\d+)?|[^\w\s]|\s+')
+TOKEN_RE = re.compile(r'<\|end\|>|[A-Za-z_]\w*|\d+(?:\.\d+)?|[^\w\s]|\s+')
 
 def load_vocab(model_dir):
     path = os.path.join(model_dir, "vocab.json")
@@ -127,7 +127,10 @@ class MiniTransformer(nn.Module):
             if next_id.item() == end_id:
                 break
             idx = torch.cat([idx, next_id], dim=1)
-        return decode(idx[0].tolist(), itos)
+        result = decode(idx[0].tolist(), itos)
+        if "<|end|>" in result:
+            result = result[:result.index("<|end|>")]
+        return result
 
 # ── Load ──────────────────────────────────────────────────────────────────────
 

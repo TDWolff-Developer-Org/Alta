@@ -28,7 +28,7 @@ except ImportError:
 # ── Config ────────────────────────────────────────────────────────────────────
 
 SEED        = 42
-EPOCHS      = 1
+EPOCHS      = 2
 BATCH_SIZE  = 8
 MAX_LEN     = 512
 STRIDE      = 256
@@ -41,7 +41,7 @@ LR          = 3e-4
 WEIGHT_DECAY= 0.01
 WARMUP_STEPS= 100
 GRAD_CLIP   = 1.0
-SAVE_EVERY  = 10
+SAVE_EVERY  = 1
 GEN_TEMP    = 0.8
 GEN_MAX_NEW = 200
 
@@ -70,7 +70,7 @@ os.makedirs(CKPT_DIR, exist_ok=True)
 
 # Splits text into: identifiers/words, numbers, punctuation, whitespace runs.
 # Whitespace is kept as tokens so decode() reconstructs the original exactly.
-TOKEN_RE = re.compile(r'[A-Za-z_]\w*|\d+(?:\.\d+)?|[^\w\s]|\s+')
+TOKEN_RE = re.compile(r'<\|end\|>|[A-Za-z_]\w*|\d+(?:\.\d+)?|[^\w\s]|\s+')
 
 def tokenize(text):
     return TOKEN_RE.findall(text)
@@ -222,7 +222,10 @@ class MiniTransformer(nn.Module):
             if next_id.item() == end_id:
                 break
             idx = torch.cat([idx, next_id], dim=1)
-        return decode(idx[0].tolist(), itos)
+        result = decode(idx[0].tolist(), itos)
+        if "<|end|>" in result:
+            result = result[:result.index("<|end|>")]
+        return result
 
 # ── LR Scheduler ──────────────────────────────────────────────────────────────
 
