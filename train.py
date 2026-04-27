@@ -28,7 +28,7 @@ except ImportError:
 # ── Config ────────────────────────────────────────────────────────────────────
 
 SEED        = 42
-EPOCHS      = 5
+EPOCHS      = 1
 BATCH_SIZE  = 8
 MAX_LEN     = 512
 STRIDE      = 256
