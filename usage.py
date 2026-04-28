@@ -11,7 +11,16 @@ except ImportError:
     print("ERROR: PyTorch not installed. Run: pip install torch")
     sys.exit(1)
 
-MODEL_DIR = "alta-model"
+## get the operating system and set path to data accordingly
+if os.name == "nt":  # Windows
+    FULL_PATH = "data_windows.csv"
+elif os.name == "posix":  # Unix/Linux/MacOS
+    FULL_PATH = "/Volumes/USBDRIVE/"
+else:
+    print("ERROR: Unsupported operating system.")
+    sys.exit(1)
+
+MODEL_DIR = FULL_PATH + "alta-model"
 
 # ── Tokenizer ─────────────────────────────────────────────────────────────────
 
@@ -121,7 +130,7 @@ class MiniTransformer(nn.Module):
             if temperature > 0:
                 logits  = logits / temperature
                 probs   = torch.softmax(logits, dim=-1)
-                next_id = torch.multinomial(probs, num_samples=1)
+                next_id = torch.multinomial(probs.cpu(), num_samples=1).to(idx.device)
             else:
                 next_id = logits.argmax(dim=-1, keepdim=True)
             if next_id.item() == end_id:

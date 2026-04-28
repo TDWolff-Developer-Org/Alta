@@ -24,6 +24,15 @@ try:
 except ImportError:
     print("ERROR: Missing deps. Run: pip install torch pandas tqdm")
     sys.exit(1)
+    
+## get the operating system and set path to data accordingly
+if os.name == "nt":  # Windows
+    FULL_PATH = "data_windows.csv"
+elif os.name == "posix":  # Unix/Linux/MacOS
+    FULL_PATH = "/Volumes/USBDRIVE/"
+else:
+    print("ERROR: Unsupported operating system.")
+    sys.exit(1)
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -46,7 +55,7 @@ GEN_TEMP    = 0.8
 GEN_MAX_NEW = 200
 
 DATA_PATH   = "data.csv"
-MODEL_DIR   = "alta-model"
+MODEL_DIR   = FULL_PATH + "alta-model"
 CKPT_DIR    = "checkpoints"
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
